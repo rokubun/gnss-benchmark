@@ -1,0 +1,31 @@
+{
+    "info" : {
+        "name" : "Geodetic GNSS receiver / single-freq / static"
+    },
+    "inputs" : {
+        "rover_file": "mhdl100t.20o_l1",
+        "base_file": "tibb100t.20o",
+        "base_lonlathgt": [-122.447607089227205, 37.890876744023892, -21.096]
+    },
+    "configurations" : [
+        {
+            "strategy": "SPP",
+            "rover_dynamics": "static"
+        },
+        {
+            "strategy": "SPP",
+            "rover_dynamics": "dynamic"
+        },
+        {
+            "strategy": "PPK",
+            "rover_dynamics": "static"
+        },
+        {
+            "strategy": "PPK",
+            "rover_dynamics": "dynamic"
+        }
+    ],
+    "validation" : {
+        "reference_position": [-2709309.015, -4253690.880, 3891678.374]
+    }
+}

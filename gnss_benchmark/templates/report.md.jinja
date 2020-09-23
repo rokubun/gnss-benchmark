@@ -1,0 +1,24 @@
+# Jason benchmarking report
+
+This document includes the accuracy benchmarking report of the Jason service
+
+{% for name, description in tests.items() %}
+## {{ description['info']['name'] }}
+
+{{ description['info'].get('description', "") }}
+
+{{ statistic_tables[name] }}
+
+{% for figure in figures[name] %}
+![{{ description['info']['name'] }}](./figures/{{ figure }} "{{ description['info']['name'] }}")
+{% endfor %}
+
+{% endfor %}
+
+## Run environement
+
+|Run environement ||
+|:---|:----:|
+| Report run date (UTC) | {{ date.strftime('%Y-%m-%d %H:%M:%S') }} |
+| Run by | {{ runby }} |
+

@@ -1,0 +1,21 @@
+{
+    "info" : {
+        "name" : "Geodetic GNSS receiver / single-freq and code only / static"
+    },
+    "inputs" : {
+        "rover_file": "mhdl100t.20o_l1_code_only"
+    },
+    "configurations" : [
+        {
+        "strategy": "SPP",
+        "rover_dynamics": "static"
+        },
+        {
+        "strategy": "SPP",
+        "rover_dynamics": "dynamic"
+        }
+    ],
+    "validation" : {
+        "reference_position": [-2709309.015, -4253690.880, 3891678.374]
+    }
+}

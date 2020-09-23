@@ -1,0 +1,15 @@
+version: "3.4"
+
+services: 
+
+  gnss_benchmark:
+      build:
+          context: ./
+          target: development
+      working_dir: /gnss_benchmark
+      volumes:
+        - .:/gnss_benchmark
+      env_file: .env
+      ports:
+        - 8888:8888
+      
