@@ -1,0 +1,40 @@
+{
+    "info" : {
+        "name" : "Geodetic GNSS receiver / multi-freq / static / 1h, 1Hz",
+        "description": "This dataset consists on processing data from a CORS GNSS receiver (1h at 1Hz sampling rate) using various strategies, one of them being PPK, using a nearby CORS GNSS receiver from the same network" 
+    },
+    "inputs" : {
+        "rover_file": "mhdl100t.20o",
+        "base_file": "tibb100t.20o",
+        "base_lonlathgt": [-122.447607089227205, 37.890876744023892, -21.096]
+    },
+    "configurations" : [
+        {
+            "strategy": "SPP",
+            "rover_dynamics": "static"
+        },
+        {
+            "strategy": "SPP",
+            "rover_dynamics": "dynamic"
+        },
+        {
+            "strategy": "PPK",
+            "rover_dynamics": "static"
+        },
+        {
+            "strategy": "PPK",
+            "rover_dynamics": "dynamic"
+        },
+        {
+            "strategy": "PPP",
+            "rover_dynamics": "static"
+        },
+        {
+            "strategy": "PPP",
+            "rover_dynamics": "dynamic"
+        }
+    ],
+    "validation" : {
+        "reference_position": [-2709309.015, -4253690.880, 3891678.374]
+    }
+}

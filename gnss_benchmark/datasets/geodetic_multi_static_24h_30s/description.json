@@ -1,0 +1,30 @@
+{
+    "info" : {
+        "name" : "Geodetic GNSS receiver / multi-freq / static / 24h, 30s",
+        "description": "This dataset consists on processing data from a CORS GNSS receiver (1 day at 30s interval) using SPP and PPP" 
+    },
+    "inputs" : {
+        "rover_file": "SBAR00ESP_R_20202020000_01D_30S_MO.rnx"
+    },
+    "configurations" : [
+        {
+            "strategy": "SPP",
+            "rover_dynamics": "static"
+        },
+        {
+            "strategy": "SPP",
+            "rover_dynamics": "dynamic"
+        },
+        {
+            "strategy": "PPP",
+            "rover_dynamics": "static"
+        },
+        {
+            "strategy": "PPP",
+            "rover_dynamics": "dynamic"
+        }
+    ],
+    "validation" : {
+        "reference_position": [4745755.1010,   180181.1350,  4244588.9520 ]
+    }
+}

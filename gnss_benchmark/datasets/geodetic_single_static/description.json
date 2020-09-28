@@ -1,6 +1,7 @@
 {
     "info" : {
-        "name" : "Geodetic GNSS receiver / single-freq / static"
+        "name" : "Geodetic GNSS receiver / single-freq / static",
+        "description": "This dataset corresponds also to a Geodetic receiver but using code and phase at L1 frequency. The length of the dataset is 1h, taken at 1Hz"
     },
     "inputs" : {
         "rover_file": "mhdl100t.20o_l1",
