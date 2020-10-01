@@ -101,14 +101,17 @@ def _run_processing_engine(descriptions, description_files_root_path, processing
 
             for configuration in description['configurations']:
 
-                cfg = {**description['inputs'], **configuration}
-                cfg['label'] = "gnss_benchmark__{}_{}".format(test_short_name, configuration['strategy'])
+                try:
+                    cfg = {**description['inputs'], **configuration}
+                    cfg['label'] = "gnss_benchmark__{}_{}".format(test_short_name, configuration['strategy'])
 
-                positions = processing_engine(**cfg)
-                reference_position = description['validation']['reference_position']
+                    positions = processing_engine(**cfg)
+                    reference_position = description['validation']['reference_position']
 
-                logger.debug(f'Positions {positions}')
-                enus = compute_enu_differences(positions, reference_position)
+                    logger.debug(f'Positions {positions}')
+                    enus = compute_enu_differences(positions, reference_position)
+                except:
+                    enus = None
 
                 results[test_short_name].append(enus)
 
@@ -218,15 +221,17 @@ def _compute_statistics(descriptions, results):
         for i_conf, _ in conf_list:
             
             enus = result[i_conf]
-                        
-            N = len(enus[:,0])
-            rms_east = np.linalg.norm(enus[:,0]) / np.sqrt(N)
-            rms_north = np.linalg.norm(enus[:,1]) / np.sqrt(N)
-            rms_h = np.linalg.norm([rms_east, rms_north]) 
-            rms_up = np.linalg.norm(enus[:,2])  / np.sqrt(N)
 
-            statistics[test_short_name].append((rms_h, rms_up))
+            rms = (-9999, -9999)
+            if enus:
+                N = len(enus[:,0])
+                rms_east = np.linalg.norm(enus[:,0]) / np.sqrt(N)
+                rms_north = np.linalg.norm(enus[:,1]) / np.sqrt(N)
+                rms_h = np.linalg.norm([rms_east, rms_north]) 
+                rms_up = np.linalg.norm(enus[:,2])  / np.sqrt(N)
+                rms = (rms_h, rms_up)
 
+            statistics[test_short_name].append(rms)
             
     return statistics    
 
