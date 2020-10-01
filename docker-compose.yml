@@ -5,11 +5,8 @@ services:
   gnss_benchmark:
       build:
           context: ./
-          target: development
-      working_dir: /gnss_benchmark
+      working_dir: /workdir
       volumes:
-        - .:/gnss_benchmark
+        - .:/workdir
       env_file: .env
-      ports:
-        - 8888:8888
       

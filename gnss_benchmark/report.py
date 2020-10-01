@@ -15,7 +15,7 @@ ecef = pyproj.Proj(proj='geocent', ellps='WGS84', datum='WGS84')
 lla = pyproj.Proj(proj='latlong', ellps='WGS84', datum='WGS84')    
 transformer = pyproj.Transformer.from_proj(lla, ecef)
 
-from roktools import geodetic
+from roktools import geodetic, logger
 
 TEMPLATES_PATH = pkg_resources.resource_filename('gnss_benchmark', 'templates')
 DATASET_PATH = pkg_resources.resource_filename('gnss_benchmark', 'datasets')
@@ -102,9 +102,12 @@ def _run_processing_engine(descriptions, description_files_root_path, processing
             for configuration in description['configurations']:
 
                 cfg = {**description['inputs'], **configuration}
+                cfg['label'] = "gnss_benchmark__{}_{}".format(test_short_name, configuration['strategy'])
 
                 positions = processing_engine(**cfg)
                 reference_position = description['validation']['reference_position']
+
+                logger.debug(f'Positions {positions}')
                 enus = compute_enu_differences(positions, reference_position)
 
                 results[test_short_name].append(enus)

@@ -2,9 +2,11 @@ import os
 import zipfile
 import numpy as np
 
+from roktools import logger
+
 import jason_gnss.commands
 
-def processing_engine(rover_file, strategy, rover_dynamics, base_file=None, base_lonlathgt=None):
+def processing_engine(rover_file, strategy, rover_dynamics, base_file=None, base_lonlathgt=None, label='gnss-benchmark'):
     """
     Definition of the processing engine to be used to compute the solution.
     
@@ -24,7 +26,8 @@ def processing_engine(rover_file, strategy, rover_dynamics, base_file=None, base
     
     result_zip_file = jason_gnss.commands.process(rover_file=rover_file, strategy=strategy,
                                                   rover_dynamics=rover_dynamics,
-                                                  base_file=base_file, base_lonlathgt=base_lonlathgt)
+                                                  base_file=base_file, base_lonlathgt=base_lonlathgt,
+                                                  label=label)
 
     pos_estimates = None
     
@@ -34,6 +37,9 @@ def processing_engine(rover_file, strategy, rover_dynamics, base_file=None, base
 
         pattern = '{}.csv'.format(strategy)
         candidate_list = list(filter(lambda x: x.endswith(pattern), namelist))  
+
+        logger.debug('Files within the zip file: {}'.format(namelist))
+        logger.debug('Result files from GNSS job: {}'.format(candidate_list))
 
         if candidate_list:
             with jason_zip.open(candidate_list[0]) as csv_fh:
