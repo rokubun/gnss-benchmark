@@ -56,7 +56,19 @@ docker-compose -f docker-compose.yml run gnss_benchmark
 When using `docker-compose` remember to place your Jason credentials in an
 `.env` file with these contents:
 
-```text
+```bash
+JASON_API_KEY=<api key>
+JASON_SECRET_TOKEN=<your secret token>
+```
+
+Although probably not used for the end user, just for debugging purposes, 
+in the event that you have a local instance of the Jason service running 
+in your facilities, you can set the Jason entry point by defining the 
+`JASON_API_URL` environment variable (along with its corresponding credentials).
+As an example:
+
+```bash
+JASON_API_URL=http://192.168.1.54:10000/api
 JASON_API_KEY=<api key>
 JASON_SECRET_TOKEN=<your secret token>
 ```
