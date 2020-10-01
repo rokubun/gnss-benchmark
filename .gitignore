@@ -1,5 +1,12 @@
 build/
 dist/
-gnss_benchmark.egg-info/
-.eggs/
-.env
+
+.eggs*
+.env*
+.ipynb_checkpoints/
+*.ipynb
+
+.vscode/
+
+*.egg-info/
+__pycache__
