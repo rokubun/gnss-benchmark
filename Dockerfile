@@ -1,15 +1,18 @@
-FROM rokubun/python:numpy-slim-buster AS production
-
+FROM rokubun/python:numpy-slim-buster AS dependencies
 
 WORKDIR /gnss_benchmark
-COPY . .
- 
+COPY requirements.txt .
 
 RUN apt-get update \
  && apt-get install -y pandoc \
  && pip install --upgrade pip \
- && pip install jason-gnss roktools pyproj Jinja2 \
- && pip install .
+ && pip install -r requirements.txt
 
-CMD ["gnss_benchmark","make_report", "-o", "/workdir", "-r", "report.pdf"]
+FROM dependencies 
+
+COPY . .
+
+RUN python setup.py install
+
+CMD ["gnss_benchmark","make_report"]
 
