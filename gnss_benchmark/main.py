@@ -11,7 +11,8 @@ authentication should be defined:
 Usage:
     gnss_benchmark -h | --help
     gnss_benchmark --version
-    gnss_benchmark make_report [-r <name>] [-o path] [-f filename] [-d <level>]
+    gnss_benchmark make_report [-d <path>] [-t <testname> ...] [-o path] [-f filename] [-r <name>] [-l <loglevel>]
+    gnss_benchmark list_tests [-d <path>] [-l <loglevel>]
 
 Options:
     -h --help           shows the help
@@ -21,12 +22,18 @@ Options:
     -f --filename <filename>     Name of the report file. The extension of the file will 
                         define its format (other supported formats are 'odt' 
                         (OpenOffice) or 'md' (Markdown)) [default: report.pdf]
-    -d --debug (DEBUG | INFO | WARNING | CRITICAL)
+    -l --log (DEBUG | INFO | WARNING | CRITICAL)
                         Output debug information or more verbose output [default: CRITICAL]
+    -t --test <testname> Select tests to run (can be repeated). If not set,
+                        all tests will be run. The name of the test must be equal
+                        to the folder name of the dataset folder
+    -d --dataset <path> path where the datasets will be located. If not defined, 
+                        tests defined in the gnss benchmark package will be used
 
 Commands:
     make_report     Make the performance report using the test cases defined in the
                     GNSS benchmark repository
+    list_tests      Outputs the list of datasets available for testing
 """
 import os.path
 import pkg_resources
@@ -44,17 +51,24 @@ def main():
 
     args = docopt.docopt(__doc__, version=version, options_first=False)
 
-    logger.set_level(args['--debug'])
+    logger.set_level(args['--log'])
 
     logger.debug("Start main, parsed arg\n {}".format(args))
 
-    if args['make_report']:
+    dataset_path = args['--dataset'] if args['--dataset'] else report.DATASET_PATH
 
+    if args['make_report']:
         report.make(jason.processing_engine, 
-                    description_files_root_path=report.DATASET_PATH, 
+                    description_files_root_path=dataset_path, 
                     output_folder=args['--output-folder'],
                     report_name=args['--filename'], 
-                    runby=args['--runby'])
+                    runby=args['--runby'], tests=args['--test'])
+
+    if args['list_tests']:
+        test_list = report.get_test_list(description_files_root_path=dataset_path)
+
+        sys.stdout.write('\n'.join(test_list) + '\n')
+
 
     return 0
 

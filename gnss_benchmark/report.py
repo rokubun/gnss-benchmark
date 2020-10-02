@@ -24,7 +24,7 @@ FIGURE_FORMAT = 'png'
 
 def make(processing_engine, description_files_root_path=DATASET_PATH, 
             output_folder='.', report_name='report.pdf', results=None, 
-            runby='info@rokubun.cat'):
+            runby='info@rokubun.cat', tests=[]):
     """
     Make a report using the provided processing engine
 
@@ -49,6 +49,9 @@ def make(processing_engine, description_files_root_path=DATASET_PATH,
 
     descriptions = _fetch_test_descriptions(description_files_root_path)
 
+    if len(tests):
+        descriptions = {k:v for k,v in descriptions.items() if k in tests}
+
     if not results:
         results = _run_processing_engine(descriptions, description_files_root_path, processing_engine)
     
@@ -56,13 +59,30 @@ def make(processing_engine, description_files_root_path=DATASET_PATH,
         
     return report_filename
 
+def get_test_list(description_files_root_path=DATASET_PATH):
+    """
+    Get the list of available tests
+    """
+
+    logger.info(f'Description files from path: {description_files_root_path}')
+    description_files = _get_description_files(description_files_root_path)
+
+    return [f.split('/')[-2] for f in description_files]
+
+# ------------------------------------------------------------------------------
+
+def _get_description_files(description_files_root_path):
+
+    description_files_path = os.path.join(description_files_root_path, '*/description.json')
+    description_files = glob.glob(description_files_path)
+
+    return description_files
 
 # ------------------------------------------------------------------------------
 
 def _fetch_test_descriptions(description_files_root_path):
 
-    description_files_path = os.path.join(description_files_root_path, '*/description.json')
-    description_files = glob.glob(description_files_path)
+    description_files = _get_description_files(description_files_root_path)
 
     descriptions = {}
 
@@ -108,9 +128,9 @@ def _run_processing_engine(descriptions, description_files_root_path, processing
                     positions = processing_engine(**cfg)
                     reference_position = description['validation']['reference_position']
 
-                    logger.debug(f'Positions {positions}')
                     enus = compute_enu_differences(positions, reference_position)
-                except:
+                except Exception as e:
+                    logger.warning(f'Could not compute solution for {test_short_name} - {configuration}. Reason: {str(e)}')
                     enus = None
 
                 results[test_short_name].append(enus)
@@ -155,10 +175,15 @@ def _render_report(descriptions, results, output_folder, report_name, runby):
     
 
     statistics = _compute_statistics(descriptions, results)
+
+    logger.debug(f'Computed statistics')
     
     statistic_tables = _build_markdown_tables(descriptions, statistics)
 
+    logger.debug(f'Computed statistics table')
+
     output_abspath = os.path.abspath(output_folder)
+    logger.debug(f'Output absolute path [ {output_abspath} ]')
 
     cwd = os.getcwd()
     with tempfile.TemporaryDirectory() as tempfolder:
@@ -188,6 +213,9 @@ def _render_report(descriptions, results, output_folder, report_name, runby):
         with open(markdown_filename, "w") as outfh:
             outfh.write(doc)
 
+
+        logger.debug(f'Markdown report rendered {markdown_filename}')
+
         # hack: if read is not performed, the pandoc command does not work
         with open(markdown_filename, "r") as fh:
             _ = fh.read()
@@ -206,6 +234,8 @@ def _render_report(descriptions, results, output_folder, report_name, runby):
 
         os.chdir(cwd)
 
+        logger.debug(f'Written report: {output_filename}')
+
     return output_filename
 
 # ------------------------------------------------------------------------------
@@ -223,7 +253,7 @@ def _compute_statistics(descriptions, results):
             enus = result[i_conf]
 
             rms = (-9999, -9999)
-            if enus:
+            if enus is not None:
                 N = len(enus[:,0])
                 rms_east = np.linalg.norm(enus[:,0]) / np.sqrt(N)
                 rms_north = np.linalg.norm(enus[:,1]) / np.sqrt(N)
@@ -261,26 +291,28 @@ def _make_plots(test_name, description, result, dst_folder):
         name = description['info']['name']
         ax.set_title(f'{name} - {strategy}\nDifference ($\Delta$) against reference')
 
-        enu_dynamic = enus[strategy]['dynamic']
-        enu_static = enus[strategy]['static']
-        ax.plot(enu_dynamic[:,0], enu_dynamic[:,1], '.b', color='#0072bd', markersize=2, label='dynamic')
-        ax.plot(enu_static[:,0], enu_static[:,1], '.r', color='#a2142f', markersize=14, label='static')
-        ax.legend()
-        ax.set_aspect('equal')
+        if enus[strategy]['dynamic'] is not None and enus[strategy]['static'] is not None:
 
-        max_delta = max( [max(np.abs(enu_dynamic[:,0]-enu_static[:,0])), max(np.abs(enu_dynamic[:,1]-enu_static[:,1]))] )
+            enu_dynamic = enus[strategy]['dynamic']
+            enu_static = enus[strategy]['static']
+            ax.plot(enu_dynamic[:,0], enu_dynamic[:,1], '.b', color='#0072bd', markersize=2, label='dynamic')
+            ax.plot(enu_static[:,0], enu_static[:,1], '.r', color='#a2142f', markersize=14, label='static')
+            ax.legend()
+            ax.set_aspect('equal')
 
-        ax.set_xlim(enu_static[:,0]-max_delta, enu_static[:,0]+max_delta)
-        ax.set_ylim(enu_static[:,1]-max_delta, enu_static[:,1]+max_delta)
+            max_delta = max( [max(np.abs(enu_dynamic[:,0]-enu_static[:,0])), max(np.abs(enu_dynamic[:,1]-enu_static[:,1]))] )
 
-        max_delta = max( [max(np.abs(enu_dynamic[:,0])), max(np.abs(enu_dynamic[:,1]))] )
+            ax.set_xlim(enu_static[:,0]-max_delta, enu_static[:,0]+max_delta)
+            ax.set_ylim(enu_static[:,1]-max_delta, enu_static[:,1]+max_delta)
 
-        ax.set_xlim(-max_delta, +max_delta)
-        ax.set_ylim(-max_delta, +max_delta)
+            max_delta = max( [max(np.abs(enu_dynamic[:,0])), max(np.abs(enu_dynamic[:,1]))] )
 
-        ax.set_xlabel('$\Delta$ Easting [m]')
-        ax.set_ylabel('$\Delta$ Northing [m]')
-        ax.grid(color='0.95')
+            ax.set_xlim(-max_delta, +max_delta)
+            ax.set_ylim(-max_delta, +max_delta)
+
+            ax.set_xlabel('$\Delta$ Easting [m]')
+            ax.set_ylabel('$\Delta$ Northing [m]')
+            ax.grid(color='0.95')
 
         plt.plot()
         output_file = os.path.join(dst_folder, f'{test_name}_{strategy.lower()}.{FIGURE_FORMAT}')
