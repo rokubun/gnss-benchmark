@@ -4,7 +4,7 @@ WORKDIR /gnss_benchmark
 COPY requirements.txt .
 
 RUN apt-get update \
- && apt-get install -y pandoc \
+ && apt-get install -y pandoc texlive  \
  && pip install --upgrade pip \
  && pip install -r requirements.txt
 
