@@ -230,7 +230,10 @@ def _render_report(descriptions, results, output_folder, report_name, runby):
         else:
             cmd = ["pandoc", "-o", output_filename, markdown_filename]
             p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            _, _ = p.communicate()
+            stdout, stderr = p.communicate()
+
+            logger.debug(f'pandoc stdout: {stdout}')
+            logger.debug(f'pandoc stderr: {stderr}')
 
         os.chdir(cwd)
 
