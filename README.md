@@ -50,7 +50,9 @@ docker run --env-file .env -v `pwd`:/data -w /data -p 8888:8888 -ti gnss-benchma
 
 # Usage with docker compose (recommended)
 docker-compose -f docker-compose.yml build
-docker-compose -f docker-compose.yml run gnss_benchmark
+docker-compose -f docker-compose.yml run gnss_benchmark bash
+python setup.py install
+gnss_benchmark make_report --debug
 ```
 
 When using `docker-compose` remember to place your Jason credentials in an

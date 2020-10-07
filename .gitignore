@@ -1,0 +1,5 @@
+build/
+dist/
+gnss_benchmark.egg-info/
+.eggs/
+.env
