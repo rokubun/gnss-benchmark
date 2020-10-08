@@ -18,7 +18,7 @@ setup(
     long_description_content_type='text/markdown',
     license='http://opensource.org/licenses/MIT',
     url="https://github.com/rokubun/gnss-benchmark",
-    setup_requires=['setuptools-git-version-cc', 'setuptools_scm'],
+    setup_requires=['setuptools-git-version-cc'],
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
