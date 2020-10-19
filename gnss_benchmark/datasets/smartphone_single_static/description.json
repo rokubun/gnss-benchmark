@@ -1,7 +1,7 @@
 {
     "info" : {
         "name" : "Smartphone Huawey VTR-L09 / single-freq / static",
-        "description" : "Test performed on rooftop of a urban environement. The reference value has been obtained with PPK strategy with static stochastics. Albeit the reference is not computed with an external reference, results help to see the expected variability of the solution"
+        "description" : "Test performed on rooftop of a urban environement."
     },
     "inputs": {
         "rover_file": "quicksurv_2020_05_19_20_19_15.txt",
@@ -27,7 +27,10 @@
         }
     ],
     "validation" : {
-        "reference_position": [4787708.974, 180158.218, 4196320.146 ]
-
+        "description": "The reference value has been obtained with PPK strategy with static stochastics. Albeit the reference is not computed with an external reference, results help to see the expected variability of the solution",
+        "reference_position": {
+            "SPP" : [4787708.974, 180158.218, 4196320.146 ],
+            "PPK" : [4787708.974, 180158.218, 4196320.146 ]
+        }
     }
 }

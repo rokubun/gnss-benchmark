@@ -35,6 +35,11 @@
         }
     ],
     "validation" : {
-        "reference_position": [-2709309.015, -4253690.880, 3891678.374]
+        "description": "The reference position has been computed using an external online service to compute PPP (JPL APPs)",
+        "reference_position": {
+            "SPP": [-2709309.015, -4253690.880, 3891678.374],
+            "PPP": [-2709309.015, -4253690.880, 3891678.374],
+            "PPK": [-2709309.015, -4253690.880, 3891678.374]
+        }
     }
 }

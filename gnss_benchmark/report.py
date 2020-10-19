@@ -121,19 +121,28 @@ def _run_processing_engine(descriptions, description_files_root_path, processing
 
             for configuration in description['configurations']:
 
+                strategy = configuration['strategy']
+                reference_position = None
+
+                try:
+                    reference_position = description['validation']['reference_position'][strategy]
+                except KeyError as e:
+                    logger.warning(f'Could not find reference position for {test_short_name} - {configuration}. Reason: {str(e)}')
+                    results[test_short_name].append(None)
+                    continue
+
                 try:
                     cfg = {**description['inputs'], **configuration}
-                    cfg['label'] = "gnss_benchmark__{}_{}".format(test_short_name, configuration['strategy'])
+                    cfg['label'] = "gnss_benchmark__{}_{}".format(test_short_name, strategy)
 
                     positions = processing_engine(**cfg)
-                    reference_position = description['validation']['reference_position']
 
                     enus = compute_enu_differences(positions, reference_position)
+                    results[test_short_name].append(enus)
                 except Exception as e:
                     logger.warning(f'Could not compute solution for {test_short_name} - {configuration}. Reason: {str(e)}')
-                    enus = None
+                    results[test_short_name].append(None)
 
-                results[test_short_name].append(enus)
 
             os.chdir(src_dir)
 

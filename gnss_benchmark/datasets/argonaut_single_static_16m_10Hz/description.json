@@ -1,7 +1,7 @@
 {
     "info" : {
         "name" : "Argonaut GNSS receiver / single-freq / static / 16m, 10Hz",
-        "description": "This dataset corresponds to a take obtained with Rokubun's Argonaut GNSS receiver (which has a patch antenna) at the rooftop of Rokubun's premises at Edifici MediaTIC (Roc Boronat 117, Barcelona). The rover data is 16minute long taken at 10Hz. The reference position has been obtained using a Geodetic GNSS receiver and antenna (Septentrio AsteRx + PolaNt) with a PPK strategy using PLAN CORS GNSS station" 
+        "description": "This dataset corresponds to a take obtained with Rokubun's Argonaut GNSS receiver (which has a patch antenna) at the rooftop of Rokubun's premises at Edifici MediaTIC (Roc Boronat 117, Barcelona). The rover data is 16minute long taken at 10Hz." 
     },
     "inputs" : {
         "rover_file": "argonaut_1.rnx",
@@ -27,6 +27,10 @@
         }
     ],
     "validation" : {
-        "reference_position": [4787691.974, 183435.243, 4196129.992]
+        "description": " The PPK reference position has been obtained using a Geodetic GNSS receiver and antenna (Septentrio AsteRx + PolaNt) with a PPK strategy using PLAN CORS GNSS station",
+        "reference_position": {
+            "SPP" : [4787691.974, 183435.243, 4196129.992],
+            "PPK" : [4787691.974, 183435.243, 4196129.992]
+        }
     }
 }

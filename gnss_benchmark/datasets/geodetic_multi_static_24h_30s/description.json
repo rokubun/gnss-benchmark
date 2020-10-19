@@ -25,6 +25,10 @@
         }
     ],
     "validation" : {
-        "reference_position": [4745755.1010,   180181.1350,  4244588.9520 ]
+        "description": "The reference position is the one being reported in the Rinex file",
+        "reference_position": {
+            "SPP": [4745755.1010,   180181.1350,  4244588.9520 ],
+            "PPP": [4745755.1010,   180181.1350,  4244588.9520 ]
+        }
     }
 }
