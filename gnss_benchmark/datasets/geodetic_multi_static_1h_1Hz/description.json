@@ -35,11 +35,11 @@
         }
     ],
     "validation" : {
-        "description": "SPP and PPK coordinates have been computed using OPUS. PPK coordinate has been copy&pasted from RINEX header.",
+        "description": "SPP and PPK coordinates have been computed using OPUS. PPK coordinate has been copy&pasted from RINEX header. WARNING NOT TO BE USED OBTAIN BENCHMARKS [-2709308.562, -4253691.177, 3891678.116]",
         "reference_position": {
             "SPP": [-2709308.991, -4253690.837, 3891678.334],
             "PPP": [-2709308.991, -4253690.837, 3891678.334],
-            "PPK": [-2709308.562, -4253691.177, 3891678.116]
+            "PPK": [-2637248.286, -4294777.765, 3895879.377]
         }
     }
 }
