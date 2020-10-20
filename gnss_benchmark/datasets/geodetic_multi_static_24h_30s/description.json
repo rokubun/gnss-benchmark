@@ -25,10 +25,10 @@
         }
     ],
     "validation" : {
-        "description": "The reference position is the one being reported in the Rinex file",
+        "description": "The reference position has been computed by transforming the ECEF coordinates in the header of the RINEX file from ETRF00 epoch 2017.0 to ITRF14 2020.78",
         "reference_position": {
-            "SPP": [4745755.1010,   180181.1350,  4244588.9520 ],
-            "PPP": [4745755.1010,   180181.1350,  4244588.9520 ]
+            "SPP": [4745754.688, 180181.713, 4244589.386],
+            "PPP": [4745754.688, 180181.713, 4244589.386]
         }
     }
 }
