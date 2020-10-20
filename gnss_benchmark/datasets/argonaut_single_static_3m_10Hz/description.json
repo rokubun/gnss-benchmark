@@ -27,10 +27,10 @@
         }
     ],
     "validation" : {
-        "description": "The PPK reference position has been obtained using a Geodetic GNSS receiver and antenna (Septentrio AsteRx + PolaNt) with a PPK strategy using PLAN CORS GNSS station",
+        "description": " The PPK reference position has been obtained using a Geodetic GNSS receiver and antenna (Septentrio AsteRx + PolaNt) with a PPK strategy using PLAN CORS GNSS station.",
         "reference_position": {
-            "SPP" : [4787691.567, 183435.827, 4196130.416],
-            "PPK" : [4787691.974, 183435.243, 4196129.992]
+            "SPP" : [4787691.6918, 183435.8298, 4196130.5431],
+            "PPK" : [4787692.1018, 183435.2469, 4196130.1062]
         }
     }
 }
