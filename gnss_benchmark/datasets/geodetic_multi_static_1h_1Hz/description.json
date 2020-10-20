@@ -6,7 +6,7 @@
     "inputs" : {
         "rover_file": "mhdl100t.20o",
         "base_file": "tibb100t.20o",
-        "base_lonlathgt": [-122.447607089227205, 37.890876744023892, -21.096]
+        "base_lonlathgt": [-121.552392919,37.890876761,-21.112]
     },
     "configurations" : [
         {
