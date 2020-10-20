@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import tempfile
 import pkg_resources
+import re
 
 import pyproj
 ecef = pyproj.Proj(proj='geocent', ellps='WGS84', datum='WGS84')
@@ -24,7 +25,7 @@ FIGURE_FORMAT = 'png'
 
 def make(processing_engine, description_files_root_path=DATASET_PATH, 
             output_folder='.', report_name='report.pdf', results=None, 
-            runby='info@rokubun.cat', tests=[]):
+            runby='info@rokubun.cat', tests=[], pattern=None):
     """
     Make a report using the provided processing engine
 
@@ -47,7 +48,7 @@ def make(processing_engine, description_files_root_path=DATASET_PATH,
             the tool.
     """
 
-    descriptions = _fetch_test_descriptions(description_files_root_path)
+    descriptions = _fetch_test_descriptions(description_files_root_path, pattern)
 
     if len(tests):
         descriptions = {k:v for k,v in descriptions.items() if k in tests}
@@ -59,30 +60,35 @@ def make(processing_engine, description_files_root_path=DATASET_PATH,
         
     return report_filename
 
-def get_test_list(description_files_root_path=DATASET_PATH):
+def get_test_list(description_files_root_path=DATASET_PATH, pattern=None):
     """
     Get the list of available tests
     """
 
     logger.info(f'Description files from path: {description_files_root_path}')
-    description_files = _get_description_files(description_files_root_path)
+    description_files = _get_description_files(description_files_root_path, pattern)
 
     return [f.split('/')[-2] for f in description_files]
 
 # ------------------------------------------------------------------------------
 
-def _get_description_files(description_files_root_path):
+def _get_description_files(description_files_root_path, pattern):
 
     description_files_path = os.path.join(description_files_root_path, '*/description.json')
-    description_files = sorted(glob.glob(description_files_path))
+    description_files = glob.glob(description_files_path)
 
-    return description_files
+    out = []
+    for description_file in sorted(description_files):
+        if pattern is None or pattern in description_file:
+            out.append(description_file)
+
+    return out
 
 # ------------------------------------------------------------------------------
 
-def _fetch_test_descriptions(description_files_root_path):
+def _fetch_test_descriptions(description_files_root_path, pattern=None):
 
-    description_files = _get_description_files(description_files_root_path)
+    description_files = _get_description_files(description_files_root_path, pattern)
 
     descriptions = {}
 

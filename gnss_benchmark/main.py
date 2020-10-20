@@ -11,8 +11,8 @@ authentication should be defined:
 Usage:
     gnss_benchmark -h | --help
     gnss_benchmark --version
-    gnss_benchmark make_report [-d <path>] [-t <testname> ...] [-o path] [-f filename] [-r <name>] [-l <loglevel>]
-    gnss_benchmark list_tests [-d <path>] [-l <loglevel>]
+    gnss_benchmark make_report [-d <path>] [-t <testname> ...] [-o path] [-f filename] [-r <name>] [-l <loglevel>] [-p <regexp>]
+    gnss_benchmark list_tests [-d <path>] [-l <loglevel>] [-p <regexp>]
 
 Options:
     -h --help           shows the help
@@ -29,6 +29,7 @@ Options:
                         to the folder name of the dataset folder
     -d --dataset <path> path where the datasets will be located. If not defined, 
                         tests defined in the gnss benchmark package will be used
+    -p --pattern <string> Filter tests according to the string given with this option
 
 Commands:
     make_report     Make the performance report using the test cases defined in the
@@ -63,10 +64,10 @@ def main():
                     description_files_root_path=dataset_path, 
                     output_folder=args['--output-folder'],
                     report_name=args['--filename'], 
-                    runby=args['--runby'], tests=args['--test'])
+                    runby=args['--runby'], tests=args['--test'], pattern=args['--pattern'])
 
     if args['list_tests']:
-        test_list = report.get_test_list(description_files_root_path=dataset_path)
+        test_list = report.get_test_list(description_files_root_path=dataset_path, pattern=args['--pattern'])
 
         sys.stdout.write('\n'.join(test_list) + '\n')
 
