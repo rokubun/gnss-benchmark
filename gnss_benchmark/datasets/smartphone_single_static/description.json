@@ -27,10 +27,10 @@
         }
     ],
     "validation" : {
-        "description": "The reference value has been obtained with PPK strategy with static stochastics. Albeit the reference is not computed with an external reference, results help to see the expected variability of the solution",
+        "description": "The reference value has been obtained with PPK strategy with static stochastics. Albeit the reference is not computed with an external reference, results help to see the expected variability of the solution. SPP position has been obtained by transforming the PPK coordinates form ETRF2000 epoch 2017.00 to ITRF2014 epoch 2020.77",
         "reference_position": {
-            "SPP" : [4787708.974, 180158.218, 4196320.146 ],
-            "PPK" : [4787708.974, 180158.218, 4196320.146 ]
+            "SPP" : [4787708.564  180158.801 4196320.586],
+            "PPK" : [4787708.974, 180158.218, 4196320.146]
         }
     }
 }
