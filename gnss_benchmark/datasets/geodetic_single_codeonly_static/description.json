@@ -17,7 +17,7 @@
         }
     ],
     "validation" : {
-        "description": "The reference position has been computed using the dual frequency data for the MHDL station and an external service to compute PPP (JPL APPs)",
+        "description": "The reference position has been computed using the OPUS web service.",
         "reference_position": {
             "SPP": [-2709308.991, -4253690.837, 3891678.334]
         } 
