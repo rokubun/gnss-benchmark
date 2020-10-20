@@ -24,7 +24,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "docopt",
-        "jason_gnss",
+        "jason_gnss>=1.10.0",
         "jinja2",
         "matplotlib",
         "numpy",

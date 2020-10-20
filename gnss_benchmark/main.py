@@ -58,7 +58,8 @@ def main():
     dataset_path = args['--dataset'] if args['--dataset'] else report.DATASET_PATH
 
     if args['make_report']:
-        report.make(jason.processing_engine, 
+        jason_engine = jason.ProcessingEngine()
+        report.make(jason_engine, 
                     description_files_root_path=dataset_path, 
                     output_folder=args['--output-folder'],
                     report_name=args['--filename'], 

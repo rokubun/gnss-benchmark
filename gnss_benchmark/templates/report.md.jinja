@@ -13,6 +13,8 @@ This document includes the accuracy benchmarking report of the Jason service
 ![{{ description['info']['name'] }}](./figures/{{ figure }} "{{ description['info']['name'] }}")
 {% endfor %}
 
+<div style="page-break-after: always"></div>
+
 {% endfor %}
 
 ## Run environement
@@ -21,4 +23,5 @@ This document includes the accuracy benchmarking report of the Jason service
 |:---|:----:|
 | Report run date (UTC) | {{ date.strftime('%Y-%m-%d %H:%M:%S') }} |
 | Run by | {{ runby }} |
-
+{% for k,v in engine_version.items() %}| {{ k }} | {{ v }} |
+{% endfor %}

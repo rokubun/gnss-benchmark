@@ -55,7 +55,7 @@ def make(processing_engine, description_files_root_path=DATASET_PATH,
     if not results:
         results = _run_processing_engine(descriptions, description_files_root_path, processing_engine)
     
-    report_filename = _render_report(descriptions, results, output_folder, report_name, runby)
+    report_filename = _render_report(descriptions, results, output_folder, report_name, runby, processing_engine)
         
     return report_filename
 
@@ -74,7 +74,7 @@ def get_test_list(description_files_root_path=DATASET_PATH):
 def _get_description_files(description_files_root_path):
 
     description_files_path = os.path.join(description_files_root_path, '*/description.json')
-    description_files = glob.glob(description_files_path)
+    description_files = sorted(glob.glob(description_files_path))
 
     return description_files
 
@@ -135,7 +135,7 @@ def _run_processing_engine(descriptions, description_files_root_path, processing
                     cfg = {**description['inputs'], **configuration}
                     cfg['label'] = "gnss_benchmark__{}_{}".format(test_short_name, strategy)
 
-                    positions = processing_engine(**cfg)
+                    positions = processing_engine.run(**cfg)
 
                     enus = compute_enu_differences(positions, reference_position)
                     results[test_short_name].append(enus)
@@ -180,7 +180,7 @@ def compute_enu_differences(positions, reference_position):
 
 # ------------------------------------------------------------------------------
 
-def _render_report(descriptions, results, output_folder, report_name, runby):
+def _render_report(descriptions, results, output_folder, report_name, runby, processing_engine):
     
 
     statistics = _compute_statistics(descriptions, results)
@@ -214,7 +214,8 @@ def _render_report(descriptions, results, output_folder, report_name, runby):
                 'figures': figures,
                 'date': datetime.datetime.utcnow(),
                 'runby': runby,
-                'statistic_tables': statistic_tables
+                'statistic_tables': statistic_tables,
+                'engine_version': processing_engine.version()
             }
             doc = template.render(render_values)
 
