@@ -6,7 +6,7 @@
     "inputs" : {
         "rover_file": "mhdl100t.20o",
         "base_file": "tibb100t.20o",
-        "base_lonlathgt": [-121.552392919,37.890876761,-21.112]
+        "base_lonlathgt": [-122.447607291,37.890876768,-21.080]
     },
     "configurations" : [
         {
@@ -37,9 +37,9 @@
     "validation" : {
         "description": "SPP and PPK coordinates have been computed using OPUS. PPK coordinate has been copy&pasted from RINEX header.",
         "reference_position": {
-            "SPP": [-2709308.991, -4253690.837, 3891678.334],
-            "PPP": [-2709308.991, -4253690.837, 3891678.334],
-            "PPK": [-2709308.562, -4253691.177, 3891678.116]
+            "SPP": [-2709309.032, -4253690.871, 3891678.386],
+            "PPP": [-2709309.032, -4253690.871, 3891678.386],
+            "PPK": [-2709309.032, -4253690.871, 3891678.386]
         }
     }
 }
