@@ -1,0 +1,17 @@
+image: python:3.8
+
+# Defined the following variables in GitlabCI configuration
+#  - JASON_API_URL
+#  - JASON_API_KEY
+#  - JASON_SECRET_TOKEN
+
+report:
+  only:
+    - master
+  when: manual 
+  script:
+    - python setup.py install
+    - gnss_benchmark make_report
+  artifacts:
+    paths:
+      - report.pdf  
