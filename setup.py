@@ -31,11 +31,12 @@ setup(
         "pandoc",
         "pyproj",
         "requests",
-        "roktools"
+        "roktools",
+        'pytest',
     ],
     entry_points={
         'console_scripts': [
-            'gnss_benchmark = gnss_benchmark.main:main'
+           'gnss_benchmark = gnss_benchmark.main:main'
         ]
     }
 )

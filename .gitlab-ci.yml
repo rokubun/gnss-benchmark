@@ -11,7 +11,7 @@ report:
   when: manual 
   script:
     - python setup.py install
-    - gnss_benchmark make_report
+    - gnss_benchmark make_report -l DEBUG
   artifacts:
     paths:
       - report.pdf  
