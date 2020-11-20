@@ -1,4 +1,4 @@
-image: python:3.8
+image: rokubun/gnss-benchmark 
 
 # Defined the following variables in GitlabCI configuration
 #  - JASON_API_URL
@@ -10,7 +10,6 @@ report:
     - master
   when: manual 
   script:
-    - python setup.py install
     - gnss_benchmark make_report -l DEBUG
   artifacts:
     paths:

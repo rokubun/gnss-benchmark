@@ -5,10 +5,12 @@ GNSS processing engine. This repository has been developed to help Rokubun
 Jason users to assess the expected performance of the platform. However, the
 orchestrator can be also used to test your own engine.
 
-The repository includes also a tool to run the complete pipeline. To do that,
-simply use these commands:
+The repository includes also a tool to run the complete pipeline. Pandoc and 
+textlive packages are required. To do that, simply use these commands:
 
 ```bash
+apt-get update
+apt-get install -y pandoc texlive
 pip install gnss-benchmark
 gnss_benchmark make_report
 ```
