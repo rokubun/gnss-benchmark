@@ -132,6 +132,7 @@ def _run_processing_engine(descriptions, description_files_root_path, processing
 
                 try:
                     reference_position = description['validation']['reference_position'][strategy]
+                    logger.debug(f'Reference position {reference_position} for strategy {strategy}')
                 except KeyError as e:
                     logger.warning(f'Could not find reference position for {test_short_name} - {configuration}. Reason: {str(e)}')
                     results[test_short_name].append(None)

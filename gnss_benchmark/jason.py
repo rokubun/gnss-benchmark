@@ -10,6 +10,9 @@ ENGINE_NAME_STR = 'engine name'
 
 class ProcessingEngine(object):
 
+    def __init__(self):
+        pass
+
     def version(self):
 
         out = jason_gnss.commands.api_status()
