@@ -30,6 +30,7 @@ setup(
         "numpy",
         "pandoc",
         "pyproj",
+        "pytest",
         "requests",
         "roktools",
         'pytest',

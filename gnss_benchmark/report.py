@@ -10,18 +10,25 @@ import subprocess
 import tempfile
 import pkg_resources
 import re
+from typing import Tuple
 
 import pyproj
 ecef = pyproj.Proj(proj='geocent', ellps='WGS84', datum='WGS84')
 lla = pyproj.Proj(proj='latlong', ellps='WGS84', datum='WGS84')    
-transformer = pyproj.Transformer.from_proj(lla, ecef)
+transformer_lla_xyz = pyproj.Transformer.from_proj(lla, ecef)
+transformer_xyz_lla = pyproj.Transformer.from_proj(ecef, lla)
 
 from roktools import geodetic, logger
+import roktools.time
+
+from . import jason
 
 TEMPLATES_PATH = pkg_resources.resource_filename('gnss_benchmark', 'templates')
 DATASET_PATH = pkg_resources.resource_filename('gnss_benchmark', 'datasets')
 
 FIGURE_FORMAT = 'png'
+
+INVALID_RMS_VALUE = -9999
 
 def make(processing_engine, description_files_root_path=DATASET_PATH, 
             output_folder='.', report_name='report.pdf', results=None, 
@@ -128,28 +135,38 @@ def _run_processing_engine(descriptions, description_files_root_path, processing
             for configuration in description['configurations']:
 
                 strategy = configuration['strategy']
-                reference_position = None
 
-                try:
-                    reference_position = description['validation']['reference_position'][strategy]
-                    logger.debug(f'Reference position {reference_position} for strategy {strategy}')
-                except KeyError as e:
-                    logger.warning(f'Could not find reference position for {test_short_name} - {configuration}. Reason: {str(e)}')
-                    results[test_short_name].append(None)
-                    continue
+                cfg = {**description['inputs'], **configuration}
+                cfg['label'] = "gnss_benchmark__{}_{}".format(test_short_name, strategy)
+                logger.debug('Running processing engine for {} / {}'.format(test_short_name, strategy))
+                positions = processing_engine.run(**cfg)
 
-                try:
-                    cfg = {**description['inputs'], **configuration}
-                    cfg['label'] = "gnss_benchmark__{}_{}".format(test_short_name, strategy)
+                logger.debug('Computing ENU differences relative to reference')
 
-                    positions = processing_engine.run(**cfg)
+                reference = None
+                if 'validation' in description:
+                    validation = description['validation']
+                    reference = None
+                    if 'reference_position' in validation:
+                        logger.debug(f'Found Reference position for strategy {strategy}')
+                        try:
+                            ecef_m = validation['reference_position'][strategy]
+                            logger.debug(f'Found Reference position for strategy {strategy}: {str(ecef_m)}')
+                            llh = transformer_xyz_lla.transform(*ecef_m)
+                            reference = jason.PositionFix(datetime.datetime.now(), *llh)
+                        except KeyError:
+                            pass
 
-                    enus = compute_enu_differences(positions, reference_position)
-                    results[test_short_name].append(enus)
-                except Exception as e:
-                    logger.warning(f'Could not compute solution for {test_short_name} - {configuration}. Reason: {str(e)}')
-                    results[test_short_name].append(None)
+                    elif 'reference_trajectory' in validation:
+                        try:
+                            logger.debug(f'Found reference trajectory for strategy {strategy}')
+                            trajectory_file =  validation['reference_trajectory'][strategy]
+                            reference = jason.convert_csv_output_to_processing_solutions(trajectory_file)
+                        except KeyError:
+                            pass
 
+                enus = compute_enu_differences(positions, reference)
+                results[test_short_name].append(enus)
 
             os.chdir(src_dir)
 
@@ -157,32 +174,30 @@ def _run_processing_engine(descriptions, description_files_root_path, processing
  
 # ------------------------------------------------------------------------------
 
-def compute_enu_differences(positions, reference_position):
-    
-    ref_llh = geodetic.xyz_to_lla(*reference_position)
+def compute_enu_differences(positions, reference):
 
-    lons = positions['longitudedeg']
-    lats = positions['latitudedeg']
-    hgts = positions['heightm']
+    if positions is None or reference is None:
+        return None
 
-    x, y, z = list(zip(transformer.transform(lons, lats, hgts )))
+    enus = []
+    for position in positions:
+        position_ref = reference.interpolate(position.epoch)
+        lon_ref = position_ref.longitude_deg
+        lat_ref = position_ref.latitude_deg
+        hgt_ref = position_ref.altitude_m
+        xyz_ref = transformer_lla_xyz.transform(lon_ref, lat_ref, hgt_ref )
 
-    x = x[0].flatten()
-    y = y[0].flatten()
-    z = z[0].flatten()
-    ecef_positions = np.stack([x, y, z], axis=-1)
-    d_xyzs = np.subtract(ecef_positions, reference_position)
+        lon = position.longitude_deg
+        lat = position.latitude_deg
+        hgt = position.altitude_m
+        xyz = transformer_lla_xyz.transform(lon, lat, hgt)
 
-    enus = None
-        
-    for d_xyz in d_xyzs:
-    
-        incoming = [geodetic.ecef_to_enu(*ref_llh[0:2], *d_xyz)]
-        if enus is None:
-            enus = np.array(incoming)
-        else:
-            enus = np.concatenate((enus, incoming))
-            
+        d_xyz = np.subtract(xyz, xyz_ref)
+
+        enu = geodetic.ecef_to_enu(lon_ref, lat_ref, *d_xyz)
+
+        enus.append(enu)
+
     return enus
 
 # ------------------------------------------------------------------------------
@@ -260,6 +275,26 @@ def _render_report(descriptions, results, output_folder, report_name, runby, pro
 
 # ------------------------------------------------------------------------------
 
+def compute_horiz_and_vertical_rms(enus: list = []) -> Tuple[float, float]:
+
+    rms_h = INVALID_RMS_VALUE
+    rms_up = INVALID_RMS_VALUE
+
+    if enus is not None:
+
+        enus = np.array(enus)
+        enus = np.atleast_1d(enus)
+
+        N = len(enus[:,0])
+        rms_east = np.linalg.norm(enus[:,0]) / np.sqrt(N)
+        rms_north = np.linalg.norm(enus[:,1]) / np.sqrt(N)
+        rms_h = np.linalg.norm([rms_east, rms_north]) 
+        rms_up = np.linalg.norm(enus[:,2])  / np.sqrt(N)
+
+    return rms_h, rms_up
+
+# ------------------------------------------------------------------------------
+
 def _compute_statistics(descriptions, results):
     
     statistics = {}
@@ -269,17 +304,8 @@ def _compute_statistics(descriptions, results):
         
         statistics[test_short_name] = []
         for i_conf, _ in conf_list:
-            
-            enus = result[i_conf]
 
-            rms = (-9999, -9999)
-            if enus is not None:
-                N = len(enus[:,0])
-                rms_east = np.linalg.norm(enus[:,0]) / np.sqrt(N)
-                rms_north = np.linalg.norm(enus[:,1]) / np.sqrt(N)
-                rms_h = np.linalg.norm([rms_east, rms_north]) 
-                rms_up = np.linalg.norm(enus[:,2])  / np.sqrt(N)
-                rms = (rms_h, rms_up)
+            rms = compute_horiz_and_vertical_rms(result[i_conf])
 
             statistics[test_short_name].append(rms)
             
@@ -313,8 +339,8 @@ def _make_plots(test_name, description, result, dst_folder):
 
         if enus[strategy]['dynamic'] is not None and enus[strategy]['static'] is not None:
 
-            enu_dynamic = enus[strategy]['dynamic']
-            enu_static = enus[strategy]['static']
+            enu_dynamic = np.array(enus[strategy]['dynamic'])
+            enu_static = np.array(enus[strategy]['static'])
             ax.plot(enu_dynamic[:,0], enu_dynamic[:,1], '.b', color='#0072bd', markersize=2, label='dynamic')
             ax.plot(enu_static[:,0], enu_static[:,1], '.r', color='#a2142f', markersize=14, label='static')
             ax.legend()

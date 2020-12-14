@@ -1,0 +1,35 @@
+{
+    "info" : {
+        "name" : "Septentrio Mosaic X5 / muti-freq / static",
+        "description" : "Test performed on rooftop of a urban environement."
+    },
+    "inputs": {
+        "rover_file": "CARD00ESP_R_20203341240_20M_01S_MO.rnx",
+        "base_file": "MARE00ESP_R_20203341240_20M_01S_MO.rnx",
+        "broadcast_file": "CARD00ESP_R_20203340900_15H_MN.rnx",
+        "sp3_file": "COD21340.sp3",
+        "base_lonlathgt": [2.434318899878233, 41.528442315126028, 86.764]
+    },
+    "configurations" : [
+        {
+            "strategy": "SPP",
+            "rover_dynamics": "dynamic"
+        },
+        {
+            "strategy": "PPK",
+            "rover_dynamics": "dynamic"
+        },
+        {
+            "strategy": "PPP",
+            "rover_dynamics": "dynamic"
+        }
+    ],
+    "validation" : {
+        "description": "",
+        "reference_trajectory": {
+            "SPP" : "reference_trajectory.csv",
+            "PPK" : "reference_trajectory.csv",
+            "PPP" : "reference_trajectory.csv"
+        }
+    }
+}
